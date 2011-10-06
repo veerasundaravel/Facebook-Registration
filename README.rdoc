@@ -1,0 +1,57 @@
+= Author
+Veerasundaravel Thirugnanasundaram <veerasundaravel@gmail.com>
+
+http://veerasundaravel.wordpress.com/2011/01/27/facebook-registration-plugin-in-rails/
+
+= Synopsis
+facebook_registration is a ruby library for displaying new Facebook Registration form and to parse to signed_request.
+[http://developers.facebook.com/docs/plugins/registration]
+
+
+=== Installation
+  sudo gem install facebook_registration
+
+
+=== Using Gem in Rails
+Once you installed the gem, you will need to configure your Facebook app in config/facebooker.yml.
+
+You can copy facebooker.yml file which one is already available in this Root directory.
+
+
+=== Initializing Registration Form
+
+  <%= init_fb_registration %>
+
+
+=== Displaying Facebook Registration Form
+
+  <%= fb_registration_form("fields" =>"name,email,password", "redirect-uri"=>"http://localhost:3000/fb_registration", "width" =>830) %>
+
+  or 
+  
+  <%= fb_registration_form("fields" =>"[{'name':'name'}, {'name':'email'}, {'name':'password'}, {'name':'username','description':'Username','type':'text'}, {'name':'like', 'description':'You like this Website', 'type':'checkbox', 'default':'checked'}]", "fb_only"=>false, "redirect-uri"=>"http://localhost:3000/fb_registration", "width" =>830, "onvalidate"=>"validate_async") %>
+  
+Available parameters:
+
+redirect-uri: The URI that will process the signed_request. It must be prefixed by your Site URL.
+fields: Comma separated list of Named Fields, or JSON of Custom Fields.
+fb_only: Optional. (boolean) Only allow users to register by linking their Facebook profile. Use this if you do not have your own registration system. Default: false.
+width: Optional. (int) The width of the iframe in pixels. If the width is < 520 the plugin will render in a small layout.
+onvalidate: Javascript function for client side validate of form inputs. And more...
+
+
+For more form field specifications refer these urls: 
+  http://developers.facebook.com/docs/plugins/registration#named_fields 
+  http://developers.facebook.com/docs/plugins/registration#custom_fields
+
+
+=== Accessing profile informations
+  After displaying the form, you can register their details and they will be redirected to the url which one you have specified as redirect-uri. 
+  
+  So in our case, you can parse the Facebook profile informations in the action fb_registration as follows:
+  
+  FacebookRegistration::SignedRequest.parse(params["signed_request"])
+  
+  it will return the output as follows:
+  
+  {"expires"=>1295964000, "registration_metadata"=>{"fields"=>"[{'name':'name'}, {'name':'location'}, {'name':'email'}]"}, "algorithm"=>"HMAC-SHA256", "registration"=>{"name"=>"Veera Sundaravel", "location"=>{"name"=>"Chennai, Tamil Nadu", "id"=>000000000}, "email"=>"veeraa2003@gmail.com"}, "user_id"=>"111111111", "oauth_token"=>"1212121212|2.9vzjKsatvaser_dStgereokRhg__.360220.1295964000-daff1|rsfsfasdfasdfasd", "user"=>{"country"=>"us", "locale"=>"en_US"}, "issued_at"=>1295956965}
